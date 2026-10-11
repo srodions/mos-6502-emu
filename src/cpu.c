@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <assert.h>
 #include "typedefs.h"
 #include "cpu.h"
 
@@ -21,7 +20,6 @@ void CPU_Reset(cpu_t* cpu)
 
 byte CPU_FetchByte(u32* cycles, cpu_t* cpu, mem_t* mem)
 {
-    assert(cpu->pc < MAX_MEM);
 	byte data = mem->data[cpu->pc];
 	++(cpu->pc);
 	--(*cycles);
@@ -29,11 +27,32 @@ byte CPU_FetchByte(u32* cycles, cpu_t* cpu, mem_t* mem)
 	return data;
 }
 
+/** read 1 byte */
 byte CPU_ReadByte(u32* cycles, byte addr, mem_t* mem)
 {
-    assert(addr < MAX_MEM);
     byte data = mem->data[addr];
     --(*cycles);
+
+    return data;
+}
+
+word CPU_FetchWord(u32* cycles, cpu_t* cpu, mem_t* mem)
+{
+    // 6502 is a little-endian
+    word data = mem->data[cpu->pc];
+    ++(cpu->pc);
+
+    data |= (mem->data[cpu->pc] << 8);
+    ++(cpu->pc);
+
+    *cycles -= 2;
+
+    /*
+     * If you wanted to handle endianness
+     * you would have to swap bytes here
+     * if (PLATFORM_BIG_ENDIAN)
+     * SwapBytesInWorld(data)
+     */
 
     return data;
 }
@@ -71,6 +90,12 @@ void CPU_Exec(u32* cycles, cpu_t* cpu, mem_t* mem)
                 cpu->a = CPU_ReadByte(cycles, zeroPgAddr, mem);
                 CPU_LDASetStatus(cpu);
                 break;
+            case INS_JSR:
+                word subAddr = CPU_FetchWord(cycles, cpu, mem); // subAddr = Subroutine address
+                MEM_WriteWord(mem, cpu->pc - 1, cpu->sp + 1, cycles);
+                cpu->pc = subAddr;
+                --(*cycles);
+                break;
             default:
                 printf("Instruction not handled %d\n", ins);
                 break;
@@ -84,6 +109,14 @@ void MEM_Init(mem_t* mem)
 	{
 		mem->data[i] = 0x00;
 	}
+}
+
+/** write 2 bytes */
+void MEM_WriteWord(mem_t* mem, word value, u32 addr, u32* cycles)
+{
+    mem->data[addr]      = value & 0xFF;
+    mem->data[addr + 1]  = (value >> 8);
+    *cycles -= 2;
 }
 
 
