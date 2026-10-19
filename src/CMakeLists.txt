@@ -1,11 +1,12 @@
-cmake_minimum_required(VERSION 3.16)
+add_library(mos-6502-emulator-lib STATIC
+    cpu.c
+    cpu.h
+    typedefs.h
+)
 
-project(mos-6502-emulator LANGUAGES C)
+add_executable(mos-6502-emulator main.c)
 
-set(CMAKE_C_STANDARD 23)
-set(CMAKE_C_STANDARD_REQUIRED ON)
-
-add_executable(mos-6502-emulator main.c cpu.c cpu.h typedefs.h)
+target_link_libraries(mos-6502-emulator PRIVATE mos-6502-emulator-lib)
 
 include(GNUInstallDirs)
 install(TARGETS mos-6502-emulator

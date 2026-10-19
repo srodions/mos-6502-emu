@@ -1,2 +1,14 @@
-src/build
-src/.qtcreator
+/build*/
+/.qtcreator/
+CMakeLists.txt.user*
+
+*.o
+*.a
+*.so
+*.dylib
+*.exe
+*.out
+
+*.log
+.DS_Store
+Thumbs.db

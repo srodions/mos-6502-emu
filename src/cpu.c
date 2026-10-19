@@ -9,7 +9,7 @@ void CPU_Reset(cpu_t* cpu)
 
 	SET_FLAG(cpu, FLAG_C, 0);	// Sets all the status flags to zero (flags must be 0x00)
 	SET_FLAG(cpu, FLAG_Z, 0);	// 00000010(2) -> 00000000(2)
-	SET_FLAG(cpu, FLAG_I, 0);	// ...
+    SET_FLAG(cpu, FLAG_I, 1);	// ... (there is to one)
 	SET_FLAG(cpu, FLAG_D, 0);
 	SET_FLAG(cpu, FLAG_B, 0);
 	SET_FLAG(cpu, FLAG_V, 0);
