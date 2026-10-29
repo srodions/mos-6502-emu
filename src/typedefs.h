@@ -17,6 +17,7 @@
 typedef uint8_t     byte;	// 8 bits
 typedef uint16_t    word;	// 16 bits
 typedef uint32_t    u32;	// 32 bits
+typedef int32_t     s32;    // 32 bits
 
 // CPU vectors; 2 bytes (16 bits) address size
 static constexpr word VEC_RESET     = 0xFFFC;

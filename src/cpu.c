@@ -7,8 +7,8 @@ void CPU_Reset(cpu_t* cpu)
 	cpu->pc = VEC_RESET;
 	cpu->sp = VEC_ZEROPG;	// Sets the stack pointer to the beginning of the stack
 
-	SET_FLAG(cpu, FLAG_C, 0);	// Sets all the status flags to zero (flags must be 0x00)
-	SET_FLAG(cpu, FLAG_Z, 0);	// 00000010(2) -> 00000000(2)
+    SET_FLAG(cpu, FLAG_C, 0);	// Sets (almost) all the status flags to zero
+    SET_FLAG(cpu, FLAG_Z, 0);	// 0b00000010 -> 0b00000000
     SET_FLAG(cpu, FLAG_I, 1);	// ... (there is to one)
 	SET_FLAG(cpu, FLAG_D, 0);
 	SET_FLAG(cpu, FLAG_B, 0);
@@ -64,8 +64,10 @@ void CPU_LDASetStatus(cpu_t* cpu)
     SET_FLAG(cpu, FLAG_N, (cpu->a & 0b10000000) > 0);
 }
 
-void CPU_Exec(u32* cycles, cpu_t* cpu, mem_t* mem)
+s32 CPU_Exec(u32* cycles, cpu_t* cpu, mem_t* mem)
 {
+    const u32 cyclesRequested = *cycles;
+
 	while (*cycles > 0)
 	{
 		byte ins = CPU_FetchByte(cycles, cpu, mem);
@@ -101,6 +103,9 @@ void CPU_Exec(u32* cycles, cpu_t* cpu, mem_t* mem)
                 break;
 		}
 	}
+
+    const s32 cyclesUsed = cyclesRequested - (*cycles);
+    return cyclesUsed;
 }
 
 void MEM_Init(mem_t* mem)
